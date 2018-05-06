@@ -1,0 +1,130 @@
+#include <iostream>
+using namespace std;
+
+class Node{
+public:
+    int data;
+    Node* leftchild;
+    Node* rightchild;
+    Node(){leftchild=rightchild=NULL;}
+};
+
+class BSTree{
+public:
+    Node* root;
+    BSTree(){root=NULL;}
+    BSTree(int item){root->data=item;}
+    bool isempty()const;
+    void Search(int item, Node* &p, bool found);
+    void Insert(Node* &z);
+    void Delete(int item);
+    void Inorder(Node* &p);
+};
+
+bool BSTree::isempty()const
+{
+    return (root == NULL);
+}
+
+void BSTree::Search(int item, Node* &p, bool found)
+{
+    found = false;
+    while(1)
+    {   if(found||p == NULL)
+            break;
+        if(item<p->data)
+            p = p->leftchild;
+        else if(item>p->data)
+            p = p->rightchild;
+        else
+            found = true;
+    }
+}
+
+void BSTree::Insert(Node* &z)
+{
+    bool found=false;
+    Search(z->data, z, found);
+    if(found)
+        cout<<"已经存在"<<endl;
+    else
+    {
+        Node *y = NULL;
+        Node *x = root;
+        while (x!=NULL) {
+            y=x;
+            if(z->data<x->data)
+                x=x->leftchild;
+            else
+                x=x->rightchild;
+        }
+        if(y==NULL)
+            root = z;
+        else if(z->data<y->data)
+            y->leftchild = z;
+        else
+            y->rightchild = z;
+    }
+}
+
+void BSTree::Delete(int item)
+{
+    bool found=false;
+    Node* p=root;
+    Node* pre=p;
+    Search(item, p, found);
+    if(!found)
+        cout<<"不存在"<<endl;
+    else
+    {
+        if(p->leftchild!=NULL&&p->rightchild!=NULL)
+        {
+            Node* p2 = p->rightchild;
+            Node* pre2 = p;
+            while(p2->leftchild!=NULL)
+            {
+                pre2=p2;
+                p2=p2->leftchild;
+            }
+            p->data = p2->data;
+            pre = pre2;
+            p = p2;
+        }
+        Node* subtree=NULL;
+        if(p->leftchild==NULL)
+            subtree = p->leftchild;
+        if(p->rightchild==NULL)
+            subtree = p->rightchild;
+        if(pre==NULL)
+            subtree = root;
+        else
+            if(pre->rightchild==p)
+                pre->rightchild = subtree;
+            else
+                pre->leftchild = subtree;
+        delete p;
+    }
+}
+
+void BSTree::Inorder(Node* &p)
+{
+    if(p!=NULL)
+    {
+        Inorder(p->leftchild);
+        cout<<p->data<<endl;
+        Inorder(p->rightchild);
+    }
+}
+
+int main()
+{
+    BSTree t;
+    int value;
+    while(cin>>value && value!=999)
+    {
+        Node *p = new Node;
+        p->data=value;
+        t.Insert(p);
+    }
+    t.Inorder(t.root);
+}
