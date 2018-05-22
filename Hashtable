@@ -1,0 +1,117 @@
+#include <iostream>
+#define HashSize 10
+using namespace std;
+typedef unsigned int uint;
+
+class Node{
+public:
+    char key;
+    char value;
+    Node* next;
+};
+
+class HashTable{
+private:
+    Node* node[HashSize];
+public:
+    HashTable();
+    uint Hash(char key);
+    Node* seek(char key);
+    bool hashinsert(char key, char value);
+    char* get(char key);
+    void display(char key);
+};
+
+void HashTable::display(char key)//Show all nodes' value which its' hash is the same
+{
+    uint index=Hash(key);
+    Node* np=node[index];
+    int cnt=0;
+    while(1)
+    {
+        cout<<np->value<<endl;
+        cnt++;
+        np=np->next;
+        if(np==NULL)
+            break;
+    }
+}
+
+HashTable::HashTable()
+{
+    int i;
+    for(i=0;i<HashSize;i++)
+    {
+        node[i]=NULL;
+    }
+}
+
+uint HashTable::Hash(char key)
+{
+    uint keyword=0;
+    for(;key;++key)
+    {
+        keyword=keyword*33+key;
+    }
+    return keyword%HashSize;
+}
+
+Node* HashTable::seek(char key)
+{
+    uint index=Hash(key);
+    Node* np;
+    np=node[index];
+    for(;np;np=np->next)
+    {
+        if(key==np->key)
+            return np;
+        else
+            return NULL;
+    }
+}
+
+bool HashTable::hashinsert(char key, char value)
+{
+    uint index;
+    Node *np=seek(key);
+    Node *last;
+    index = Hash(key);
+    if(np==NULL)
+    {
+        np = new Node;
+        if(!np) return false;
+        np->key=key;
+        np->value=value;
+        np->next = NULL;
+        node[index] = np;
+        last=np;
+        cout<<"YES!"<<endl;
+    }
+    else
+    {
+        Node* ops = new Node;
+        if(!ops) return false;
+        ops->key=key;
+        ops->value=value;
+        ops->next=NULL;
+        last->next=ops;
+        last=ops;
+        cout<<"YES!"<<endl;
+    }
+    return true;
+}
+
+int main()
+{
+    HashTable h;
+    cout<<"Please input key_word pair below and end with (s s):"<<endl;
+    char key;
+    char word;
+    while(cin>>key>>word && key!='s' && word!='s')
+    {
+        h.hashinsert(key,word);
+    }
+    cout<<"Please input a key and will show the value with same hash:"<<endl;
+    cin>>key;
+    h.display(key);
+}
